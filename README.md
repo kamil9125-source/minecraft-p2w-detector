@@ -1,0 +1,1 @@
+# minecraft-p2w-detector
