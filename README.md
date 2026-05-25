@@ -127,7 +127,8 @@ After editing the config, use:
 ## Build
 
 Requirements:
-
+- Fabric Loader for Minecraft 1.21.11
+- Fabric API for Minecraft 1.21.11
 - JDK 21
 - Gradle installed, or import the folder as a Gradle project in IntelliJ IDEA
 
