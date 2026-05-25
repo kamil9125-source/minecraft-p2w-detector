@@ -8,10 +8,11 @@ Client-side Fabric mod MVP for detecting possible pay-to-win signals on Minecraf
 - Reads normal chat messages and server/game messages.
 - Scores suspicious P2W phrases such as `VIP`, `SVIP`, `rank`, `rankup`, `perks`, `crate key`, `monthly crate`, `gkit`, `god kit`, `/fly`, `/kit`, `/repair`, `coins`, `money`, `store`, `buycraft`, `tebex`, `buy`.
 - Shows a P2W risk level: `NONE`, `LOW`, `MEDIUM`, `HIGH`.
+- Can passively fingerprint visible server plugins/software from command namespaces, command names, chat/system text, current GUI title, server brand, and visible `/plugins`-style responses if you manually run the command.
 - Can query DupeDB for known exploit records and show their database status: `WORKING`, `VERIFIED`, `PATCHED`, `UNVERIFIED`.
 - Supports DupeDB OAuth 2.1 + PKCE login from inside Minecraft via a local loopback callback.
 - Automatically refreshes saved DupeDB tokens when the access token expires.
-- Saves a local JSON report including P2W findings and the latest DupeDB result.
+- Saves a local JSON report including P2W findings, plugin fingerprints and the latest DupeDB result.
 
 ## Keyword coverage
 
@@ -31,6 +32,39 @@ netherite, diamond, elytra, totem, beacon, enchanted
 
 Polish signals such as `sklep`, `ranga`, `klucz`, `skrzynka`, `kity`, `monety`, and `kasa` are also kept.
 
+## Plugin fingerprinting
+
+The plugin scanner is passive. It does **not** run `/plugins`, `/pl`, `/bukkit:plugins`, or probing commands by itself. It only reads data already visible to the client:
+
+- command namespaces such as `luckperms:lp`, `essentials:home`, `worldguard:region`,
+- command names such as `/shop`, `/crate`, `/ah`, `/backpack`, `/rankup`,
+- chat/system messages that mention known plugin names or plugin-specific wording,
+- visible `/plugins` / `/pl` style responses if **you manually run the command** and the server prints a plugin list,
+- the current GUI title when you run `/p2wscan plugins`,
+- server brand/software if the connection exposes it, such as Paper, Purpur, Spigot, Bukkit.
+
+Example visible response that will now be parsed:
+
+```text
+Plugins (4): LuckPerms, EssentialsX, WorldGuard, ExcellentCrates
+```
+
+The parsed plugin names are stored as high-confidence plugin signals with source `chat_plugins_response` or `system_plugins_response`.
+
+Use:
+
+```text
+/p2wscan plugins
+```
+
+Then, after DupeDB login, you can search DupeDB using detected plugin names:
+
+```text
+/p2wscan dupedb plugins
+```
+
+This sends up to 5 plugin-name searches to DupeDB to avoid spamming the API.
+
 ## Commands
 
 ```text
@@ -38,7 +72,9 @@ Polish signals such as `sklep`, `ranga`, `klucz`, `skrzynka`, `kity`, `monety`, 
 /p2wscan report
 /p2wscan clear
 /p2wscan help
+/p2wscan plugins
 /p2wscan dupedb
+/p2wscan dupedb plugins
 /p2wscan dupedb <query>
 /p2wscan dupedb login
 /p2wscan dupedb logout
@@ -64,6 +100,8 @@ GET https://dupedb.net/api/exploits/search?edition=java&platform=multiplayer&ser
 ```
 
 The mod does **not** execute exploits. It only reads status from DupeDB.
+
+`/p2wscan dupedb plugins` searches by detected plugin names. It requires OAuth login because it uses the authenticated search API.
 
 ## DupeDB OAuth login
 
