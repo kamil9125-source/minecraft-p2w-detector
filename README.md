@@ -6,12 +6,30 @@ Client-side Fabric mod MVP for detecting possible pay-to-win signals on Minecraf
 
 - Starts a local scan when you join a server.
 - Reads normal chat messages and server/game messages.
-- Scores suspicious P2W phrases such as `VIP`, `SVIP`, `crate`, `klucz`, `/fly`, `/kit`, `/repair`, `coins`, `money`, `sklep`, `buy`.
+- Scores suspicious P2W phrases such as `VIP`, `SVIP`, `rank`, `rankup`, `perks`, `crate key`, `monthly crate`, `gkit`, `god kit`, `/fly`, `/kit`, `/repair`, `coins`, `money`, `store`, `buycraft`, `tebex`, `buy`.
 - Shows a P2W risk level: `NONE`, `LOW`, `MEDIUM`, `HIGH`.
 - Can query DupeDB for known exploit records and show their database status: `WORKING`, `VERIFIED`, `PATCHED`, `UNVERIFIED`.
 - Supports DupeDB OAuth 2.1 + PKCE login from inside Minecraft via a local loopback callback.
 - Automatically refreshes saved DupeDB tokens when the access token expires.
 - Saves a local JSON report including P2W findings and the latest DupeDB result.
+
+## Keyword coverage
+
+The scanner includes English and Polish P2W signals. Examples:
+
+```text
+store, shop, buy, purchase, donate, voucher, buycraft, tebex
+rank, ranks, rankup, vip, svip, mvp, elite, premium, donor
+perk, perks, perks shop, permissions
+key, keys, crate, crate key, monthly crate, loot crate, mystery crate, lootbox
+kit, kits, gkit, god kit, monthly kit, donor kit
+/fly, /kit, /repair, /fix, /heal, /feed, /god
+coins, money, cash, tokens, gems, emeralds
+boost, booster, xp, spawner, sellwand, home, sethome
+netherite, diamond, elytra, totem, beacon, enchanted
+```
+
+Polish signals such as `sklep`, `ranga`, `klucz`, `skrzynka`, `kity`, `monety`, and `kasa` are also kept.
 
 ## Commands
 
@@ -21,7 +39,7 @@ Client-side Fabric mod MVP for detecting possible pay-to-win signals on Minecraf
 /p2wscan clear
 /p2wscan help
 /p2wscan dupedb
-/p2wscan dupedb <fraza>
+/p2wscan dupedb <query>
 /p2wscan dupedb login
 /p2wscan dupedb logout
 /p2wscan dupedb status
@@ -37,7 +55,7 @@ Client-side Fabric mod MVP for detecting possible pay-to-win signals on Minecraf
 GET https://dupedb.net/api/exploits/search?edition=java&platform=multiplayer&serverIp=<server>&status=working,verified,patched
 ```
 
-`/p2wscan dupedb <fraza>` searches by phrase, for example:
+`/p2wscan dupedb <query>` searches by query, for example:
 
 ```text
 /p2wscan dupedb shulker
@@ -127,8 +145,7 @@ After editing the config, use:
 ## Build
 
 Requirements:
-- Fabric Loader for Minecraft 1.21.11
-- Fabric API for Minecraft 1.21.11
+
 - JDK 21
 - Gradle installed, or import the folder as a Gradle project in IntelliJ IDEA
 
